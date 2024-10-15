@@ -19,7 +19,9 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (inputValue.trim() === '') {
+      const trimmedInput = inputValue.trim();
+
+      if (trimmedInput === '') {
         setSuggestions(people);
         setNoSuggestions(false);
 
@@ -27,7 +29,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
       }
 
       const filteredPeople = people.filter(person =>
-        person.name.toLowerCase().includes(inputValue.toLowerCase()),
+        person.name.toLowerCase().includes(trimmedInput.toLowerCase()),
       );
 
       setSuggestions(filteredPeople);
@@ -37,15 +39,19 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     return () => clearTimeout(timeoutId);
   }, [inputValue, people, delay]);
 
-  const handleSelect = (person: Person) => {
+  const handlePersonSelect = (person: Person) => {
     setInputValue(person.name);
     setSelectedPerson(person);
     setSuggestions([]);
     onSelected(person);
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // eslint-disable-next-line max-len
+  const handleInputValueChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setInputValue(event.target.value);
+
     if (selectedPerson) {
       setSelectedPerson(null);
       onSelected(null);
@@ -60,7 +66,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
           placeholder="Enter a part of the name"
           className="input"
           value={inputValue}
-          onChange={handleInputChange}
+          onChange={handleInputValueChange}
           data-cy="search-input"
         />
       </div>
@@ -72,7 +78,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
               <div
                 key={person.slug}
                 className="dropdown-item"
-                onClick={() => handleSelect(person)}
+                onClick={() => handlePersonSelect(person)}
                 data-cy="suggestion-item"
               >
                 <p className="has-text-link">{person.name}</p>
